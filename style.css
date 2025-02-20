@@ -50,9 +50,9 @@ select {
     border-radius: 5px;
 }
 
-/* フルスクリーンのポップアップ */
+/* トリミングモーダル（初期状態は非表示） */
 #cropModal {
-    display: none;
+    display: none; /* ページロード時に表示しない */
     position: fixed;
     top: 0;
     left: 0;
@@ -64,19 +64,66 @@ select {
     color: white;
 }
 
-/* モーダルコンテンツ */
+
+/* モーダルコンテンツ全体 */
 .modal-content {
-    position: relative;
+    display: flex;
+    align-items: center;
     background-color: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 10px;
-    text-align: center;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    max-width: 95%;
+    max-width: 98vw;
+    max-height: 98vh;
+}
+
+/* キャンバス（トリミング画像） */
+#cropCanvas {
+    max-width: 80vw;  /* 画像エリアを広く */
+    max-height: 90vh;
+    border: 2px solid black;
+    margin: 0 auto;
+}
+
+/* コントロールエリア */
+.crop-controls {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    margin-left: 15px; /* 画像の右側に配置 */
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
 }
+
+/* アスペクト比選択 */
+#aspectRatio {
+    font-size: 16px;
+    padding: 6px;
+    margin-bottom: 10px;
+}
+
+/* 設定完了ボタン */
+#confirmCrop {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+#confirmCrop:hover {
+    background-color: #0056b3;
+}
+
+
+
 
 /* トリミングエリアとボタンの配置 */
 .crop-container {
@@ -85,13 +132,6 @@ select {
     justify-content: center;
     gap: 20px;
     width: 100%;
-}
-
-/* キャンバス */
-#cropCanvas {
-    max-width: 70vw;
-    max-height: 70vh;
-    border: 2px solid black;
 }
 
 /* トリミングのコントロールパネル（アスペクト比選択とボタン） */

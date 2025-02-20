@@ -18,19 +18,18 @@
     <!-- トリミング設定モーダル -->
     <div id="cropModal" class="modal">
         <div class="modal-content">
-            <h2>トリミング範囲を設定</h2>
-            <div class="crop-container">
-                <canvas id="cropCanvas"></canvas>
-                <div class="crop-controls">
-                    <label>アスペクト比:</label>
-                    <select id="aspectRatio">
-                        <option value="free">フリー</option>
-                        <option value="1:1">1:1</option>
-                        <option value="4:3">4:3</option>
-                        <option value="3:4">3:4</option>
-                    </select>
-                    <button id="confirmCrop" class="primary-btn large-btn">✅ 設定完了</button>
-                </div>
+            <canvas id="cropCanvas"></canvas>
+            
+            <!-- 右側のコントロールエリア -->
+            <div class="crop-controls">
+                <label>アスペクト比:</label>
+                <select id="aspectRatio">
+                    <option value="free">フリー</option>
+                    <option value="1:1">1:1</option>
+                    <option value="4:3">4:3</option>
+                    <option value="3:4">3:4</option>
+                </select>
+                <button id="confirmCrop" class="primary-btn">✅ 設定完了</button>
             </div>
         </div>
     </div>
