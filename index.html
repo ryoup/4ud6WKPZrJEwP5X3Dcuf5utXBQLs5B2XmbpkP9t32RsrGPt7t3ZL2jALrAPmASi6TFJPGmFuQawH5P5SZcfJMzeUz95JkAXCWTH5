@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画像トリミング</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>画像トリミングツール</h1>
+    
+    <h3>1枚目の画像を選択（トリミング範囲を決める）</h3>
+    <input type="file" id="mainImageInput" accept="image/*">
+    <canvas id="mainCanvas"></canvas>
+    <button id="confirmCrop" style="display:none;">この範囲でトリミング</button>
+    
+    <h3>他の画像を選択（同じ範囲でトリミング）</h3>
+    <input type="file" id="otherImagesInput" accept="image/*" multiple>
+    <div id="output"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
