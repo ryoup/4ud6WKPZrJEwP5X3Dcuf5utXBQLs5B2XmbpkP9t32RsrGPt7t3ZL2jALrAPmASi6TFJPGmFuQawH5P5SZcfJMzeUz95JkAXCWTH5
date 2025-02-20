@@ -52,7 +52,7 @@ select {
 
 /* トリミングモーダル（初期状態は非表示） */
 #cropModal {
-    display: none; /* ページロード時に表示しない */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -62,10 +62,10 @@ select {
     justify-content: center;
     align-items: center;
     color: white;
+    overflow: hidden;
 }
 
-
-/* モーダルコンテンツ全体 */
+/* モーダルコンテンツ（サイズがはみ出たら縮小） */
 .modal-content {
     display: flex;
     align-items: center;
@@ -73,16 +73,17 @@ select {
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    max-width: 98vw;
-    max-height: 98vh;
+    max-width: 95vw; /* 画面の95%まで広げる */
+    max-height: 95vh;
+    overflow: auto; /* はみ出たらスクロール可能に */
 }
 
-/* キャンバス（トリミング画像） */
+/* キャンバス（ウィンドウサイズに応じて縮小） */
 #cropCanvas {
-    max-width: 80vw;  /* 画像エリアを広く */
-    max-height: 90vh;
+    width: 80vw;
+    height: auto;
+    max-height: 80vh;
     border: 2px solid black;
-    margin: 0 auto;
 }
 
 /* コントロールエリア */
@@ -91,7 +92,7 @@ select {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-left: 15px; /* 画像の右側に配置 */
+    margin-left: 15px;
     padding: 10px;
     background-color: #f4f4f4;
     border-radius: 5px;
@@ -121,9 +122,6 @@ select {
 #confirmCrop:hover {
     background-color: #0056b3;
 }
-
-
-
 
 /* トリミングエリアとボタンの配置 */
 .crop-container {

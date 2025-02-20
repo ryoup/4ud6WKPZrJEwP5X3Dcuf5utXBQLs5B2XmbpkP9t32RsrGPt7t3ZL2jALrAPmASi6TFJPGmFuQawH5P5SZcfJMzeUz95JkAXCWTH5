@@ -223,3 +223,42 @@ document.getElementById("downloadAll").addEventListener("click", function () {
         }
     });
 });
+
+// **ポップアップのサイズ調整**
+function adjustModalSize() {
+    const modal = document.getElementById("cropModal");
+    const canvas = document.getElementById("cropCanvas");
+
+    // 画面サイズの 80% 以内に収める
+    const maxCanvasWidth = window.innerWidth * 0.8;
+    const maxCanvasHeight = window.innerHeight * 0.8;
+
+    // **アスペクト比を保持したまま縮小**
+    const imageAspectRatio = imageObj.naturalWidth / imageObj.naturalHeight;
+    let newWidth = maxCanvasWidth;
+    let newHeight = maxCanvasHeight;
+
+    if (imageAspectRatio > 1) {
+        // 横長画像なら幅を基準に調整
+        newHeight = newWidth / imageAspectRatio;
+    } else {
+        // 縦長画像なら高さを基準に調整
+        newWidth = newHeight * imageAspectRatio;
+    }
+
+    // キャンバスのサイズを設定（アスペクト比を維持）
+    canvas.style.width = `${newWidth}px`;
+    canvas.style.height = `${newHeight}px`;
+
+    // モーダルのスクロール許可
+    modal.style.overflow = "auto";
+}
+
+// **モーダルを開くときにサイズ調整を適用**
+document.getElementById("openCropWindow").addEventListener("click", function () {
+    adjustModalSize();
+    document.getElementById("cropModal").style.display = "flex";
+});
+
+// **ウィンドウサイズ変更時にポップアップサイズを再調整**
+window.addEventListener("resize", adjustModalSize);
