@@ -3,20 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>画像トリミング</title>
+    <title>Image cropping tool</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <h1>画像トリミングツール</h1>
-    
-    <h3>1枚目の画像を選択（トリミング範囲を決める）</h3>
+
+    <!-- メイン画像アップロード -->
+    <h3>① トリミング範囲を設定する画像を選択</h3>
     <input type="file" id="mainImageInput" accept="image/*">
-    <canvas id="mainCanvas"></canvas>
-    <button id="confirmCrop" style="display:none;">この範囲でトリミング</button>
-    
-    <h3>他の画像を選択（同じ範囲でトリミング）</h3>
+    <button id="openCropWindow" class="primary-btn" style="display: none;">▶ トリミング設定</button>
+    <span id="cropStatus" class="status-text"></span>
+
+    <!-- トリミング設定モーダル -->
+    <div id="cropModal" class="modal">
+        <div class="modal-content">
+            <h2>トリミング範囲を設定</h2>
+            <canvas id="cropCanvas"></canvas>
+            <div class="modal-controls">
+                <label>アスペクト比:</label>
+                <select id="aspectRatio">
+                    <option value="free">フリー</option>
+                    <option value="1:1">1:1</option>
+                    <option value="4:3">4:3</option>
+                </select>
+                <button id="confirmCrop" class="primary-btn">✅ 設定完了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 他の画像アップロード -->
+    <h3>② トリミング範囲を適用する画像を選択（複数可）</h3>
     <input type="file" id="otherImagesInput" accept="image/*" multiple>
-    <div id="output"></div>
+    <button id="applyCrop" class="primary-btn" style="display: none;">▶ トリミング適用</button>
+
+    <!-- トリミング情報表示 -->
+    <div id="cropInfo"></div>
+
+    <!-- 一括ダウンロードボタン -->
+    <button id="downloadAll" class="download-btn" style="display: none;">⬇ すべてダウンロード</button>
 
     <script src="script.js"></script>
 </body>

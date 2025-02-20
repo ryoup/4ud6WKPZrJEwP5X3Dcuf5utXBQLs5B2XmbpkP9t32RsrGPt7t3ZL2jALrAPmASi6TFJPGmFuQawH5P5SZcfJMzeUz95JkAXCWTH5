@@ -2,17 +2,96 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 20px;
+    background-color: #f4f4f4;
 }
 
 canvas {
-    border: 1px solid black;
+    border: 2px solid black;
     max-width: 100%;
     cursor: crosshair;
+    background-color: white;
 }
 
+/* ボタンのデザイン */
 button {
-    font-size: 16px;
-    padding: 10px 20px;
-    margin-top: 10px;
+    font-size: 18px;
+    padding: 12px 20px;
+    margin: 10px;
     cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* メインボタン */
+.primary-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+.primary-btn:hover {
+    background-color: #0056b3;
+}
+
+/* ダウンロードボタン */
+.download-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.download-btn:hover {
+    background-color: #1e7e34;
+}
+
+/* アスペクト比選択 */
+select {
+    font-size: 16px;
+    margin: 10px;
+    padding: 5px;
+}
+
+/* フルスクリーンのポップアップ */
+#cropModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+/* モーダルコンテンツ */
+.modal-content {
+    position: relative;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* トリミングボックスのスタイルを改善（枠を太くし、背景を半透明） */
+.crop-box {
+    border: 3px dashed rgba(255, 0, 0, 0.8); /* 赤色の破線で強調 */
+    background-color: rgba(255, 0, 0, 0.2); /* 赤色の半透明背景 */
+    position: absolute;
+    pointer-events: none; /* マウス操作を無効にする */
+}
+
+/* ポップアップ画像の赤枠を削除 */
+#cropCanvas {
+    max-width: 90vw;
+    max-height: 80vh;
+    border: none;
+}
+
+.status-text {
+    font-size: 16px;
+    color: green;
+    font-weight: bold;
+    margin-left: 10px;
 }
