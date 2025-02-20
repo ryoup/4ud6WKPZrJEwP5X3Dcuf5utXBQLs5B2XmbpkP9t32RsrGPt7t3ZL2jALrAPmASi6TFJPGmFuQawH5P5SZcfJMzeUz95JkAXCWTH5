@@ -112,6 +112,9 @@ document.getElementById("openCropWindow").addEventListener("click", function () 
             } else if (aspectRatio === "4:3") {
                 newWidth = moveX - cropData.x;
                 newHeight = Math.round(newWidth * 3 / 4);
+            } else if (aspectRatio === "3:4") {
+                newWidth = moveX - cropData.x;
+                newHeight = Math.round(newWidth * 4 / 3);
             } else {
                 newWidth = moveX - cropData.x;
                 newHeight = moveY - cropData.y;
@@ -203,12 +206,20 @@ document.getElementById("applyCrop").addEventListener("click", function () {
 
 // **一括ダウンロード**
 document.getElementById("downloadAll").addEventListener("click", function () {
-    croppedImages.forEach((img) => {
+    croppedImages.forEach((img, index) => {
         const link = document.createElement("a");
         link.href = img.dataURL;
         link.download = img.name;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+
+        if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
+            // iOSの場合は新しいタブで開く（ダウンロードを促す）
+            const newTab = window.open();
+            newTab.document.write(`<img src="${img.dataURL}" style="width:100%">`);
+        } else {
+            // Android / PCはそのままダウンロード
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     });
 });

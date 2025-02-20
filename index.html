@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image cropping tool</title>
+    <title>画像トリミングツール</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,15 +19,18 @@
     <div id="cropModal" class="modal">
         <div class="modal-content">
             <h2>トリミング範囲を設定</h2>
-            <canvas id="cropCanvas"></canvas>
-            <div class="modal-controls">
-                <label>アスペクト比:</label>
-                <select id="aspectRatio">
-                    <option value="free">フリー</option>
-                    <option value="1:1">1:1</option>
-                    <option value="4:3">4:3</option>
-                </select>
-                <button id="confirmCrop" class="primary-btn">✅ 設定完了</button>
+            <div class="crop-container">
+                <canvas id="cropCanvas"></canvas>
+                <div class="crop-controls">
+                    <label>アスペクト比:</label>
+                    <select id="aspectRatio">
+                        <option value="free">フリー</option>
+                        <option value="1:1">1:1</option>
+                        <option value="4:3">4:3</option>
+                        <option value="3:4">3:4</option>
+                    </select>
+                    <button id="confirmCrop" class="primary-btn large-btn">✅ 設定完了</button>
+                </div>
             </div>
         </div>
     </div>
@@ -35,13 +38,13 @@
     <!-- 他の画像アップロード -->
     <h3>② トリミング範囲を適用する画像を選択（複数可）</h3>
     <input type="file" id="otherImagesInput" accept="image/*" multiple>
-    <button id="applyCrop" class="primary-btn" style="display: none;">▶ トリミング適用</button>
+    <button id="applyCrop" class="primary-btn large-btn" style="display: none;">▶ トリミング適用</button>
 
     <!-- トリミング情報表示 -->
     <div id="cropInfo"></div>
 
     <!-- 一括ダウンロードボタン -->
-    <button id="downloadAll" class="download-btn" style="display: none;">⬇ すべてダウンロード</button>
+    <button id="downloadAll" class="download-btn large-btn" style="display: none;">⬇ すべてダウンロード</button>
 
     <script src="script.js"></script>
 </body>

@@ -5,17 +5,10 @@ body {
     background-color: #f4f4f4;
 }
 
-canvas {
-    border: 2px solid black;
-    max-width: 100%;
-    cursor: crosshair;
-    background-color: white;
-}
-
-/* ボタンのデザイン */
+/* スマホ対応のボタンサイズを大きく */
 button {
     font-size: 18px;
-    padding: 12px 20px;
+    padding: 14px 24px;
     margin: 10px;
     cursor: pointer;
     border: none;
@@ -43,11 +36,18 @@ button {
     background-color: #1e7e34;
 }
 
-/* アスペクト比選択 */
+/* 大きめのボタン（スマホ対応） */
+.large-btn {
+    font-size: 20px;
+    padding: 16px 28px;
+}
+
+/* アスペクト比選択のデザインを改善 */
 select {
-    font-size: 16px;
+    font-size: 18px;
+    padding: 10px;
     margin: 10px;
-    padding: 5px;
+    border-radius: 5px;
 }
 
 /* フルスクリーンのポップアップ */
@@ -72,26 +72,41 @@ select {
     border-radius: 10px;
     text-align: center;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 95%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* トリミングボックスのスタイルを改善（枠を太くし、背景を半透明） */
-.crop-box {
-    border: 3px dashed rgba(255, 0, 0, 0.8); /* 赤色の破線で強調 */
-    background-color: rgba(255, 0, 0, 0.2); /* 赤色の半透明背景 */
-    position: absolute;
-    pointer-events: none; /* マウス操作を無効にする */
+/* トリミングエリアとボタンの配置 */
+.crop-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
 }
 
-/* ポップアップ画像の赤枠を削除 */
+/* キャンバス */
 #cropCanvas {
-    max-width: 90vw;
-    max-height: 80vh;
-    border: none;
+    max-width: 70vw;
+    max-height: 70vh;
+    border: 2px solid black;
 }
 
-.status-text {
-    font-size: 16px;
-    color: green;
-    font-weight: bold;
-    margin-left: 10px;
+/* トリミングのコントロールパネル（アスペクト比選択とボタン） */
+.crop-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* トリミング枠のスタイル改善 */
+.crop-box {
+    border: 3px dashed rgba(255, 0, 0, 0.8);
+    background-color: rgba(255, 0, 0, 0.2);
+    position: absolute;
+    pointer-events: none;
 }
