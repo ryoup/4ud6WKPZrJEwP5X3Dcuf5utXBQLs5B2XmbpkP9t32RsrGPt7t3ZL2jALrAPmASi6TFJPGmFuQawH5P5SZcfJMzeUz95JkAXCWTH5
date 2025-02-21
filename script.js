@@ -1,11 +1,13 @@
 let cropData = { x: 50, y: 50, width: 100, height: 100 };
-let aspectRatio = "free"; // デフォルトはフリー
+let aspectRatio = "1:1"; // デフォルトを 1:1 に変更
 let dragging = false;
 let resizing = false;
+let resizingCorner = null;
 let startX, startY;
 let croppedImages = [];
 
 // **アスペクト比選択**
+document.getElementById("aspectRatio").value = "1:1"; // 初期値を1:1に設定
 document.getElementById("aspectRatio").addEventListener("change", function () {
     aspectRatio = this.value;
 });
@@ -43,6 +45,14 @@ document.getElementById("openCropWindow").addEventListener("click", function () 
     cropCanvas.width = imageObj.naturalWidth;
     cropCanvas.height = imageObj.naturalHeight;
     ctx.drawImage(imageObj, 0, 0);
+
+    // **中央に 1:1 のトリミングボックスを初期配置**
+    let boxSize = Math.min(cropCanvas.width, cropCanvas.height) * 0.5;
+    cropData.width = boxSize;
+    cropData.height = boxSize;
+    cropData.x = Math.floor((cropCanvas.width - boxSize) / 2);
+    cropData.y = Math.floor((cropCanvas.height - boxSize) / 2);
+
     drawCropBox(ctx);
 
     function getCanvasCoordinates(event) {
@@ -58,25 +68,99 @@ document.getElementById("openCropWindow").addEventListener("click", function () 
 
     function drawCropBox(ctx) {
         ctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+        
+        // **画像を再描画**
         ctx.drawImage(imageObj, 0, 0);
-    
-        // トリミングボックスの視認性を向上
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 3;
-        ctx.setLineDash([6, 3]); // 破線
+
+        // **暗いオーバーレイを描画**
+        ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+        ctx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+
+        // **トリミングエリアだけ透明にする（クリア）**
+        ctx.clearRect(cropData.x, cropData.y, cropData.width, cropData.height);
+
+        // **画像をトリミング部分にだけもう一度描画**
+        ctx.drawImage(
+            imageObj,
+            cropData.x, cropData.y, cropData.width, cropData.height, // 元画像からの切り取り位置
+            cropData.x, cropData.y, cropData.width, cropData.height  // キャンバス上の描画位置
+        );
+
+        // **トリミングボックスの枠**
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 3]); // 破線
         ctx.strokeRect(cropData.x, cropData.y, cropData.width, cropData.height);
-    
-        // 半透明の背景を追加
-        ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
-        ctx.fillRect(cropData.x, cropData.y, cropData.width, cropData.height);
+
+        // **角の「┓」デザイン**
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 10;
+        ctx.setLineDash([]);
+
+        const cornerSize = 30; // L字のサイズ
+
+        const corners = [
+            { x: cropData.x, y: cropData.y }, // 左上
+            { x: cropData.x + cropData.width, y: cropData.y }, // 右上
+            { x: cropData.x, y: cropData.y + cropData.height }, // 左下
+            { x: cropData.x + cropData.width, y: cropData.y + cropData.height } // 右下
+        ];
+
+        corners.forEach(corner => {
+            ctx.beginPath();
+            ctx.moveTo(corner.x, corner.y);
+            ctx.lineTo(corner.x + (corner.x === cropData.x ? cornerSize : -cornerSize), corner.y);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(corner.x, corner.y);
+            ctx.lineTo(corner.x, corner.y + (corner.y === cropData.y ? cornerSize : -cornerSize));
+            ctx.stroke();
+        });
+
     }
-    
+
+    function drawHandles(ctx) {
+        const handleSize = 20; // ハンドルサイズを拡大
+        ctx.fillStyle = "blue";
+        ["topLeft", "topRight", "bottomLeft", "bottomRight"].forEach((corner) => {
+            const { x, y } = getHandlePosition(corner);
+            ctx.fillRect(x - handleSize / 2, y - handleSize / 2, handleSize, handleSize);
+        });
+    }
+
+    function getHandlePosition(corner) {
+        return {
+            topLeft: { x: cropData.x, y: cropData.y },
+            topRight: { x: cropData.x + cropData.width, y: cropData.y },
+            bottomLeft: { x: cropData.x, y: cropData.y + cropData.height },
+            bottomRight: { x: cropData.x + cropData.width, y: cropData.y + cropData.height },
+        }[corner];
+    }
+
+    function getResizingCorner(x, y) {
+        const handleSize = 20; // ハンドル判定を大きめに調整
+        for (const corner of ["topLeft", "topRight", "bottomLeft", "bottomRight"]) {
+            const { x: hx, y: hy } = getHandlePosition(corner);
+            if (Math.abs(x - hx) < handleSize && Math.abs(y - hy) < handleSize) {
+                return corner;
+            }
+        }
+        return null;
+    }
 
     function startDragging(event) {
         event.preventDefault();
         const pos = getCanvasCoordinates(event);
         startX = pos.x;
         startY = pos.y;
+
+        // 角のハンドルが押されたかチェック
+        resizingCorner = getResizingCorner(startX, startY);
+        if (resizingCorner) {
+            resizing = true;
+            return;
+        }
 
         if (
             startX > cropData.x &&
@@ -85,51 +169,87 @@ document.getElementById("openCropWindow").addEventListener("click", function () 
             startY < cropData.y + cropData.height
         ) {
             dragging = true;
-        } else {
-            cropData.x = startX;
-            cropData.y = startY;
-            resizing = true;
         }
     }
 
     function moveCropBox(event) {
         if (!dragging && !resizing) return;
         event.preventDefault();
-
+    
         const pos = getCanvasCoordinates(event);
         let moveX = pos.x;
         let moveY = pos.y;
-
-        let newWidth = cropData.width;
-        let newHeight = cropData.height;
-
+    
         if (dragging) {
+            // **ドラッグ時の処理**
             cropData.x = Math.max(0, Math.min(moveX - cropData.width / 2, cropCanvas.width - cropData.width));
             cropData.y = Math.max(0, Math.min(moveY - cropData.height / 2, cropCanvas.height - cropData.height));
         } else if (resizing) {
-            if (aspectRatio === "1:1") {
-                newWidth = newHeight = Math.min(moveX - cropData.x, moveY - cropData.y);
-            } else if (aspectRatio === "4:3") {
+            let aspect = aspectRatio === "1:1" ? 1 : aspectRatio === "4:3" ? 4 / 3 : aspectRatio === "3:4" ? 3 / 4 : null;
+    
+            let newWidth = cropData.width;
+            let newHeight = cropData.height;
+    
+            if (resizingCorner === "bottomRight") {
+                // **右下のリサイズ**
                 newWidth = moveX - cropData.x;
-                newHeight = Math.round(newWidth * 3 / 4);
-            } else if (aspectRatio === "3:4") {
-                newWidth = moveX - cropData.x;
-                newHeight = Math.round(newWidth * 4 / 3);
-            } else {
-                newWidth = moveX - cropData.x;
-                newHeight = moveY - cropData.y;
+                newHeight = aspect ? newWidth / aspect : moveY - cropData.y;
+            } else if (resizingCorner === "topLeft") {
+                // **左上のリサイズ（右下固定）**
+                let fixedRight = cropData.x + cropData.width;
+                let fixedBottom = cropData.y + cropData.height;
+                
+                // **新しい幅・高さを計算**
+                newWidth = fixedRight - moveX;
+                newHeight = aspect ? newWidth / aspect : fixedBottom - moveY;
+            
+                // **右下の座標を固定**
+                cropData.x = fixedRight - newWidth;
+                cropData.y = fixedBottom - newHeight;
+            
+            } else if (resizingCorner === "topRight") {
+                // **右上のリサイズ（左下固定）**
+                let fixedLeft = cropData.x;
+                let fixedBottom = cropData.y + cropData.height;
+                newWidth = moveX - fixedLeft;
+                newHeight = aspect ? newWidth / aspect : fixedBottom - cropData.y;
+    
+                // **左下のYを固定**
+                cropData.y = fixedBottom - newHeight;
+            } else if (resizingCorner === "bottomLeft") {
+                // **左下のリサイズ（右上固定）**
+                let fixedRight = cropData.x + cropData.width;
+                let fixedTop = cropData.y;
+                newWidth = fixedRight - moveX;
+                newHeight = aspect ? newWidth / aspect : moveY - fixedTop;
+    
+                // **右上のYを固定**
+                cropData.x = Math.max(0, moveX);
             }
-
+    
+            // **サイズの最小値制限**
             cropData.width = Math.max(10, Math.min(newWidth, cropCanvas.width - cropData.x));
             cropData.height = Math.max(10, Math.min(newHeight, cropCanvas.height - cropData.y));
         }
-
+    
         drawCropBox(ctx);
+    }
+    
+    
+    
+    function getFixedCorner(corner) {
+        return {
+            topLeft: { x: "x", y: "y" },
+            topRight: { x: "x", y: "y" },
+            bottomLeft: { x: "x", y: "y" },
+            bottomRight: { x: "x", y: "y" },
+        }[corner];
     }
 
     function stopDragging() {
         dragging = false;
         resizing = false;
+        resizingCorner = null;
     }
 
     cropCanvas.addEventListener("mousedown", startDragging);
@@ -140,12 +260,6 @@ document.getElementById("openCropWindow").addEventListener("click", function () 
     cropCanvas.addEventListener("touchstart", startDragging, { passive: false });
     cropCanvas.addEventListener("touchmove", moveCropBox, { passive: false });
     cropCanvas.addEventListener("touchend", stopDragging);
-
-    document.getElementById("confirmCrop").addEventListener("click", function () {
-        modal.style.display = "none";
-        localStorage.setItem("cropData", JSON.stringify(cropData));
-        document.getElementById("applyCrop").style.display = "inline";
-    });
 });
 
 document.getElementById("confirmCrop").addEventListener("click", function () {
